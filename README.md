@@ -1,11 +1,11 @@
 This project is bootstrapped using [react-redux-starter-kit](http://cloudmu.github.io/react-redux-starter-kit/)
 
 Data tables selected for comparison are;
-- react-virtualized
-- react-data-grid
-- palantir/blueprint table
-- react-semantic-ui table
-- react-table
+- [react-virtualized](https://github.com/bvaughn/react-virtualized)
+- [react-data-grid](https://github.com/adazzle/react-data-grid)
+- [react-table](https://github.com/react-tools/react-table)
+- [palantir/blueprint table](http://blueprintjs.com/docs/v2/#table-js)
+- [react-semantic-ui table](https://react.semantic-ui.com/collections/table)
 
 Secondary choices;
 - Microsoft Fabric's DetailsList
