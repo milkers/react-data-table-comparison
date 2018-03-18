@@ -16,6 +16,7 @@ import PrivateRoute from "../misc/PrivateRoute";
 import Home from "../home/Home";
 import UsersPage from "../user/UsersPage";
 import ReposPage from "../repo/ReposPage";
+import RVReposPage from "../repo-rv/RVReposPage";
 import RDGReposPage from "../repo-rdg/RDGReposPage";
 import TempReposPage from "../repo-temp/TempReposPage";
 import About from "../about/About";
@@ -55,6 +56,11 @@ class App extends Component {
                   component={ReposPage}
                 />
                 <PrivateRoute
+                  path="/repos-rv"
+                  isAuthenticated={isAuthenticated}
+                  component={RVReposPage}
+                />
+                <PrivateRoute
                   path="/repos-rdg"
                   isAuthenticated={isAuthenticated}
                   component={RDGReposPage}
@@ -68,7 +74,7 @@ class App extends Component {
               </Switch>
             </div>
           </div>
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </Router>
     );

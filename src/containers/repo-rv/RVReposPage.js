@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classNames from "classnames";
 
-import { AutoSizer, Table, Column } from "react-virtualized";
+import { AutoSizer, Table, Column, Grid, CellMeasurer } from "react-virtualized";
 
 import {
   invalidateReposPage,
@@ -13,8 +13,10 @@ import {
 
 import "react-virtualized/styles.css";
 import "./repo.css";
+import { Button } from "bootstrap/dist/js/bootstrap";
 
-class ReposPage extends PureComponent {
+class RVReposPage extends PureComponent {
+
   constructor(props) {
     super(props);
     this.handleNextPageClick = this.handleNextPageClick.bind(this);
@@ -22,6 +24,13 @@ class ReposPage extends PureComponent {
     this.handleRefreshClick = this.handleRefreshClick.bind(this);
     this.getNoRowsRenderer = this.getNoRowsRenderer.bind(this);
     this.getRowClassName = this.getRowClassName.bind(this);
+    this.handleCheckboxCheck = this.handleCheckboxCheck.bind(this);
+    this.handleSelectionTogglerClick = this.handleSelectionTogglerClick.bind(this);
+
+    this.state = {
+      selectionType: 2, // 0, 1, 2
+      selectedRows: []
+    };
   }
 
   componentDidMount() {
@@ -77,6 +86,31 @@ class ReposPage extends PureComponent {
     dispatch(invalidateReposPage(page));
   }
 
+  handleCheckboxCheck(e, cellData, cellDataKey, columnData, rowData, rowIndex) {
+    let selectedRows = this.state.selectedRows.slice();
+
+    if (this.state.selectionType === 1) {
+      selectedRows = [];
+    }
+    selectedRows[rowIndex] = e.target.checked;
+    
+
+    this.setState({selectedRows}, () => {
+      console.log("checked row: ", this.state, cellData, cellDataKey, columnData, rowData, rowIndex);
+    });
+  }
+
+  handleSelectionTogglerClick(e) {
+    e.preventDefault();
+    let {selectionType} = this.state;
+    selectionType = (selectionType + 1) % 3;
+
+    this.setState({
+      selectionType: selectionType,
+      selectedRows: []
+    });
+  }
+
   ownerCellRenderer = ({
     cellData,
     cellDataKey,
@@ -115,17 +149,33 @@ class ReposPage extends PureComponent {
     </span>
   );
 
+  checkboxCellRenderer =({
+    cellData,
+    cellDataKey,
+    columnData,
+    rowData,
+    rowIndex
+  }) => (
+    <input 
+      type="checkbox" 
+      checked={this.state.selectedRows[rowIndex]}
+      onChange={(e) => this.handleCheckboxCheck(e, cellData, cellDataKey, columnData, rowData, rowIndex)}
+    />
+  );
+
+
   render() {
     const { page, error, repos, isFetching } = this.props;
     const prevStyles = classNames("page-item", { disabled: page <= 1 });
     const nextStyles = classNames("page-item", {
       disabled: repos.length === 0
     });
+    console.log('RV, repos: ', repos);
 
     return (
       <div className="container">
 
-        This is intial react-virtualized table.
+        This is react-virtualized
 
         <nav>
           <ul className="pagination pagination-sm">
@@ -166,6 +216,14 @@ class ReposPage extends PureComponent {
           </ul>
         </nav>
 
+        <button 
+          type="button" 
+          className="btn btn-primary"
+          onClick={this.handleSelectionTogglerClick}
+        >
+          Selection Toggler-{this.state.selectionType}
+        </button>
+
         {error &&
           <div className="alert alert-danger">
             {error.message || "Unknown errors."}
@@ -199,8 +257,13 @@ class ReposPage extends PureComponent {
                   rowCount={repos.length}
                   rowGetter={({ index }) => repos[index]}
                 >
+                  {this.state.selectionType !== 0 &&
+                    <Column dataKey="id" cellRenderer={this.checkboxCellRenderer} width={60} />
+                  }
 
                   <Column label="Repository" dataKey="name" width={200} />
+
+                  <Column label="Language" dataKey="language" width={200} />
 
                   <Column
                     label="Owner"
@@ -235,12 +298,16 @@ class ReposPage extends PureComponent {
               )}
             </AutoSizer>
           </div>}
+
+
+          
+
       </div>
     );
   }
 }
 
-ReposPage.propTypes = {
+RVReposPage.propTypes = {
   page: PropTypes.number.isRequired,
   repos: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
@@ -274,4 +341,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(ReposPage);
+export default connect(mapStateToProps)(RVReposPage);

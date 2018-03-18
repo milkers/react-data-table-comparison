@@ -20,7 +20,6 @@ const User = ({ user }) => {
         <iframe
           title={login}
           src={src}
-          allowTransparency="true"
           scrolling="0"
           frameBorder="0"
           width="500"

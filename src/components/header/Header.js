@@ -20,6 +20,9 @@ class Header extends Component {
     const isAboutPage = pathname.indexOf("about") > -1;
     const isUsersPage = pathname.indexOf("users") > -1;
     const isReposPage = pathname.indexOf("repos") > -1;
+    const isRepoGridsPage = pathname.indexOf("repos-") > -1;
+
+    console.log('isRepoGridsPage: ', isRepoGridsPage);
 
     return (
       !isLoginPage &&
@@ -57,12 +60,12 @@ class Header extends Component {
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                Most Starred Repos
+                Repos Grid Samples
                 <span className="caret" />
               </a>
               <ul className="dropdown-menu" style={{ right: 0, left: "auto" }}>
 
-                <Link className="dropdown-item" to="/repos">react-virtualized</Link>
+                <Link className="dropdown-item" to="/repos-rv">react-virtualized</Link>
 
                 <Link className="dropdown-item" to="/repos-rdg">react-data-grid</Link> 
 
@@ -75,7 +78,7 @@ class Header extends Component {
 
             <li
               title="Github Repos with over 10000 Stars"
-              className={isReposPage ? "nav-item active" : "nav-item"}
+              className={isReposPage && !isRepoGridsPage ? "nav-item active" : "nav-item"}
             >
               <Link className="nav-link" to="/repos">Most Starred Repos</Link>
             </li>
