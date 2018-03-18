@@ -256,6 +256,7 @@ class RVReposPage extends PureComponent {
                   rowHeight={50}
                   rowCount={repos.length}
                   rowGetter={({ index }) => repos[index]}
+                  sort={({sortBy, sortDirection}) => console.log("header clicked; ", sortBy)}
                 >
                   {this.state.selectionType !== 0 &&
                     <Column dataKey="id" cellRenderer={this.checkboxCellRenderer} width={60} />
