@@ -93,16 +93,16 @@ class RVReposPage extends PureComponent {
       selectedRows = [];
     }
     selectedRows[rowIndex] = e.target.checked;
-    
 
-    this.setState({selectedRows}, () => {
+
+    this.setState({ selectedRows }, () => {
       console.log("checked row: ", this.state, cellData, cellDataKey, columnData, rowData, rowIndex);
     });
   }
 
   handleSelectionTogglerClick(e) {
     e.preventDefault();
-    let {selectionType} = this.state;
+    let { selectionType } = this.state;
     selectionType = (selectionType + 1) % 3;
 
     this.setState({
@@ -118,11 +118,11 @@ class RVReposPage extends PureComponent {
     rowData,
     rowIndex
   }) => (
-    <a href={cellData.html_url} target="_blank" rel="noopener noreferrer">
-      <img src={cellData.avatar_url} width="32" height="32" alt="owner" />
-      <span style={{ marginLeft: "0.5em" }}>{cellData.login}</span>
-    </a>
-  );
+      <a href={cellData.html_url} target="_blank" rel="noopener noreferrer">
+        <img src={cellData.avatar_url} width="32" height="32" alt="owner" />
+        <span style={{ marginLeft: "0.5em" }}>{cellData.login}</span>
+      </a>
+    );
 
   linkCellRenderer = ({
     cellData,
@@ -131,8 +131,8 @@ class RVReposPage extends PureComponent {
     rowData,
     rowIndex
   }) => (
-    <a href={cellData} target="_blank" rel="noopener noreferrer">{cellData}</a>
-  );
+      <a href={cellData} target="_blank" rel="noopener noreferrer">{cellData}</a>
+    );
 
   stargazerCellRenderer = ({
     cellData,
@@ -141,27 +141,27 @@ class RVReposPage extends PureComponent {
     rowData,
     rowIndex
   }) => (
-    <span className="float-right">
-      {cellData.toLocaleString()}
-      {" "}
-      <i className="fa fa-star" style={{ color: "gold" }} />
-      {" "}
-    </span>
-  );
+      <span className="float-right">
+        {cellData.toLocaleString()}
+        {" "}
+        <i className="fa fa-star" style={{ color: "gold" }} />
+        {" "}
+      </span>
+    );
 
-  checkboxCellRenderer =({
+  checkboxCellRenderer = ({
     cellData,
     cellDataKey,
     columnData,
     rowData,
     rowIndex
   }) => (
-    <input 
-      type="checkbox" 
-      checked={this.state.selectedRows[rowIndex]}
-      onChange={(e) => this.handleCheckboxCheck(e, cellData, cellDataKey, columnData, rowData, rowIndex)}
-    />
-  );
+      <input
+        type="checkbox"
+        checked={this.state.selectedRows[rowIndex]}
+        onChange={(e) => this.handleCheckboxCheck(e, cellData, cellDataKey, columnData, rowData, rowIndex)}
+      />
+    );
 
 
   render() {
@@ -210,14 +210,14 @@ class RVReposPage extends PureComponent {
                 href=""
                 onClick={this.handleNextPageClick}
               >
-                  <span>Next</span>
+                <span>Next</span>
               </a>
             </li>
           </ul>
         </nav>
 
-        <button 
-          type="button" 
+        <button
+          type="button"
           className="btn btn-primary"
           onClick={this.handleSelectionTogglerClick}
         >
@@ -300,7 +300,7 @@ class RVReposPage extends PureComponent {
           </div>}
 
 
-          
+
 
       </div>
     );
