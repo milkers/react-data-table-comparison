@@ -12,6 +12,7 @@ import App from "./containers/app/App";
 // jquery and tether for bootstrap to use
 // alternative is to link them in index.html
 import "bootstrap/dist/css/bootstrap.css";
+// import 'semantic-ui-css/semantic.min.css';
 import "font-awesome/css/font-awesome.css";
 import jquery from "jquery";
 window.$ = window.jQuery = jquery;

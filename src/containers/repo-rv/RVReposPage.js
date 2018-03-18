@@ -2,6 +2,7 @@ import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import classNames from "classnames";
+import {Button} from 'semantic-ui-react';
 
 import { AutoSizer, Table, Column, Grid, CellMeasurer } from "react-virtualized";
 
@@ -13,7 +14,7 @@ import {
 
 import "react-virtualized/styles.css";
 import "./repo.css";
-import { Button } from "bootstrap/dist/js/bootstrap";
+// import { Button } from "bootstrap/dist/js/bootstrap";
 
 class RVReposPage extends PureComponent {
 
@@ -119,6 +120,7 @@ class RVReposPage extends PureComponent {
     rowIndex
   }) => (
       <a href={cellData.html_url} target="_blank" rel="noopener noreferrer">
+        {/* <Button>click</Button> */}
         <img src={cellData.avatar_url} width="32" height="32" alt="owner" />
         <span style={{ marginLeft: "0.5em" }}>{cellData.login}</span>
       </a>
