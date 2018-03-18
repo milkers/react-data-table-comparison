@@ -264,7 +264,7 @@ class RVReposPage extends PureComponent {
 
                   <Column label="Repository" dataKey="name" width={200} />
 
-                  <Column label="Language" dataKey="language" width={200} />
+                  <Column label={this.state.selectionType === 0 ? "Language" : "Dil"} dataKey="language" width={200} />
 
                   <Column
                     label="Owner"
