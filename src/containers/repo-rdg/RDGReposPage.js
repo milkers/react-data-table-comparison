@@ -14,6 +14,49 @@ import {
 // import "react-virtualized/styles.css";
 import "./repo.css";
 
+
+// Custom Formatter component
+class StargazerFormatter extends React.Component {
+  static propTypes = {
+    value: PropTypes.number.isRequired
+  };
+
+  render() {
+    const starCount = this.props.value;
+    return (
+      <div>
+        <span className="float-right">
+          {starCount}
+          {" "}
+          <i className="fa fa-star" style={{ color: "gold" }} />
+          {" "}
+        </span>
+      </div>
+    );
+  }
+}
+
+class StargazerHeaderFormatter extends React.Component {
+  render() {
+    console.log('StargazerHeaderFormatter: ', this.props);
+    return (
+      <div>
+        <span>
+          {" "}
+          <i className="fa fa-star" style={{ color: "gold" }} />
+          {" "}
+        </span>
+      </div>
+    );
+  }
+}
+
+class EmptyRowsView extends React.Component {
+  render() {
+    return (<div>Nothing to show</div>);
+  }
+}
+
 class RDGReposPage extends PureComponent {
   constructor(props) {
     super(props);
@@ -22,22 +65,37 @@ class RDGReposPage extends PureComponent {
     this.handleRefreshClick = this.handleRefreshClick.bind(this);
     this.getNoRowsRenderer = this.getNoRowsRenderer.bind(this);
     this.getRowClassName = this.getRowClassName.bind(this);
+    this.handleSelectionTogglerClick = this.handleSelectionTogglerClick.bind(this);
+    this.onRowsSelected = this.onRowsSelected.bind(this);
+    this.onRowsDeselected = this.onRowsDeselected.bind(this);
 
+    this.state = {
+      selectionType: 2, // 0, 1, 2
+      selectedRows: []
+    };
+
+    this.initializeColumns();
+  }
+
+  initializeColumns() {
     this._columns = [
       {
         key: 'id',
         name: 'ID',
-        locked: true
+        locked: true,
+        width: 100
       },
       {
         key: 'repo',
         name: 'Repository',
+        locked: true,
         width: 200
       },
       {
         key: 'language',
-        name: 'Language',
-        width: 200
+        name: this.state.selectionType === 0 ? 'Language' : 'Dil',
+        width: 200,
+        sortable: true
       },
       {
         key: 'owner',
@@ -47,7 +105,10 @@ class RDGReposPage extends PureComponent {
       {
         key: 'stargazers_count',
         name: 'Stargazers',
-        width: 200
+        width: 200,
+        headerRenderer: <StargazerHeaderFormatter />,
+        formatter: StargazerFormatter,
+        sortable: true
       },
       {
         key: 'full_name',
@@ -75,8 +136,7 @@ class RDGReposPage extends PureComponent {
         width: 200
       }
     ];
-
-    this.state = null;
+    console.log('RDG, initializeCols, _cols, state: ', this._columns, this.state);
   }
 
   componentDidMount() {
@@ -88,10 +148,6 @@ class RDGReposPage extends PureComponent {
     const { dispatch, page } = nextProps;
     dispatch(fetchTopReposIfNeeded(page));
   }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   return shallowCompare(this, nextProps, nextState);
-  // }
 
   getNoRowsRenderer() {
     return (
@@ -132,17 +188,50 @@ class RDGReposPage extends PureComponent {
     dispatch(invalidateReposPage(page));
   }
 
+  handleSelectionTogglerClick(e) {
+    e.preventDefault();
+    let { selectionType } = this.state;
+    selectionType = (selectionType + 1) % 3;
+
+    this.setState({
+      selectionType: selectionType,
+      selectedRows: []
+    });
+    
+  }
+
+  handleGridSort (sortColumn, sortDirection) {
+    console.log('RDG, handleGridsort, column, direction: ', sortColumn, sortDirection);
+  }
+
+  onRowsSelected = (rows) => {
+    if (this.state.selectionType === 1) {
+      this.state.selectedRows = [];
+    }
+
+    this.setState({selectedRows: this.state.selectedRows.concat(rows.map(r => r.rowIdx))}, () => {
+      console.log('RDG, onRowsSelected, rows, state: ', rows, this.state);
+    });
+  };
+
+  onRowsDeselected = (rows) => {
+    let rowIndexes = rows.map(r => r.rowIdx);
+    this.setState({selectedRows: this.state.selectedRows.filter(i => rowIndexes.indexOf(i) === -1 )}, () => {
+      console.log('RDG, onRowsDeselected, rows, state: ', rows, this.state);
+    });
+  };
+
+
   getRandomDate = (start, end) => {
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toLocaleDateString();
   };
 
   createRows = (repos) => {
-    console.log('RDG, createRows, repos: ', repos);
 
     let rows = [];
     for (let i = 0; i < repos.length; i++) {
       rows.push({
-        id: i,
+        id: repos[i].id,
         repo: repos[i].name,
         language: repos[i].language,
         owner: repos[i].owner.login,
@@ -150,9 +239,6 @@ class RDGReposPage extends PureComponent {
         full_name: repos[i].full_name,
         html_url: repos[i].html_url,
         description: repos[i].description,
-        complete: Math.min(100, Math.round(Math.random() * 110)),
-        priority: ['Critical', 'High', 'Medium', 'Low'][Math.floor((Math.random() * 3) + 1)],
-        issueType: ['Bug', 'Improvement', 'Epic', 'Story'][Math.floor((Math.random() * 3) + 1)],
         startDate: this.getRandomDate(new Date(2015, 3, 1), new Date()),
         completeDate: this.getRandomDate(new Date(), new Date(2016, 0, 1))
       });
@@ -171,7 +257,8 @@ class RDGReposPage extends PureComponent {
     const nextStyles = classNames("page-item", {
       disabled: repos.length === 0
     });
-    console.log('React Data Grid, render, repos: ', repos);
+    console.log('React Data Grid, render, repos: ', repos, this.state);
+    this.initializeColumns();
     this.createRows(repos);
 
     return (
@@ -217,12 +304,42 @@ class RDGReposPage extends PureComponent {
           </ul>
         </nav>
 
-        <ReactDataGrid
-          columns={this._columns}
-          rowGetter={this.rowGetter}
-          rowsCount={repos.length}
-          minHeight={500} 
-        /> 
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={this.handleSelectionTogglerClick}
+        >
+          Selection Toggler-{this.state.selectionType}
+        </button>
+
+        {repos &&
+          <div
+            ref="TABLE_DIV"
+            style={{
+              opacity: isFetching ? 0.5 : 1,
+              width: "100%",
+              marginTop: "20px"
+            }}
+          >
+            <ReactDataGrid
+              onGridSort={this.handleGridSort}
+              columns={this._columns}
+              rowGetter={this.rowGetter}
+              rowsCount={repos.length}
+              minHeight={500} 
+              emptyRowsView={EmptyRowsView}
+              rowSelection={{
+                showCheckbox: this.state.selectionType !== 0,
+                enableShiftSelect: false,
+                onRowsSelected: this.onRowsSelected,
+                onRowsDeselected: this.onRowsDeselected,
+                selectBy: {
+                  indexes: this.state.selectedRows
+                }
+              }} 
+            /> 
+          </div>
+        }
       </div>
     );
   }

@@ -44,10 +44,6 @@ class RVReposPage extends PureComponent {
     dispatch(fetchTopReposIfNeeded(page));
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   return shallowCompare(this, nextProps, nextState);
-  // }
-
   getNoRowsRenderer() {
     return (
       <div className="noRows">
@@ -165,6 +161,24 @@ class RVReposPage extends PureComponent {
       />
     );
 
+  // This is a custom header example for a single cell
+  // You have access to all of the named params,
+  // But you don't necessarily need to use them all.
+  headerRenderer = ({
+    columnData,
+    dataKey,
+    disableSort,
+    label,
+    sortBy,
+    sortDirection
+  }) => (
+    <span className="float-right">
+      {" "}
+      <i className="fa fa-star" style={{ color: "gold" }} />
+      {" "}
+    </span>
+  )
+
 
   render() {
     const { page, error, repos, isFetching } = this.props;
@@ -279,6 +293,7 @@ class RVReposPage extends PureComponent {
                     label="Stargazers"
                     dataKey="stargazers_count"
                     cellRenderer={this.stargazerCellRenderer}
+                    headerRenderer={this.headerRenderer}
                     width={150}
                   />
 
@@ -300,10 +315,8 @@ class RVReposPage extends PureComponent {
                 </Table>
               )}
             </AutoSizer>
-          </div>}
-
-
-
+          </div>
+        }
 
       </div>
     );
