@@ -15,6 +15,13 @@ import {
 import "./repo.css";
 
 
+/* DOC
+- RDG can be extended with types for TypeScript.
+  https://www.npmjs.com/package/@types/react-data-grid
+- ? Customize checkbox header
+  https://github.com/adazzle/react-data-grid/issues/678
+*/
+
 // Custom Formatter component
 class StargazerFormatter extends React.Component {
   static propTypes = {
@@ -51,6 +58,23 @@ class StargazerHeaderFormatter extends React.Component {
   }
 }
 
+class OwnerFormatter extends React.Component {
+  static propTypes = {
+    value: PropTypes.object.isRequired
+  };
+
+  render() {
+    const owner = this.props.value;
+
+    return (
+      <a href={owner.html_url} target="_blank" rel="noopener noreferrer">
+        <img src={owner.avatar_url} width="32" height="32" alt="owner" />
+        <span style={{ marginLeft: "0.5em" }}>{owner.login}</span>
+      </a>
+    );
+  }
+}
+
 class EmptyRowsView extends React.Component {
   render() {
     return (<div>Nothing to show</div>);
@@ -80,12 +104,6 @@ class RDGReposPage extends PureComponent {
   initializeColumns() {
     this._columns = [
       {
-        key: 'id',
-        name: 'ID',
-        locked: true,
-        width: 100
-      },
-      {
         key: 'repo',
         name: 'Repository',
         locked: true,
@@ -100,6 +118,7 @@ class RDGReposPage extends PureComponent {
       {
         key: 'owner',
         name: 'Owner',
+        formatter: OwnerFormatter,
         width: 200
       },
       {
@@ -202,9 +221,15 @@ class RDGReposPage extends PureComponent {
 
   handleGridSort (sortColumn, sortDirection) {
     console.log('RDG, handleGridsort, column, direction: ', sortColumn, sortDirection);
+    // implement your comparer function here.
   }
 
   onRowsSelected = (rows) => {
+    if (this.state.selectionType !== 2 && rows.length > 1) {
+      console.log('RDG, onRowsSelected, multi row selection is forbidden, rows: ', rows, this.state);
+      return;
+    }
+
     if (this.state.selectionType === 1) {
       this.state.selectedRows = [];
     }
@@ -231,10 +256,9 @@ class RDGReposPage extends PureComponent {
     let rows = [];
     for (let i = 0; i < repos.length; i++) {
       rows.push({
-        id: repos[i].id,
         repo: repos[i].name,
         language: repos[i].language,
-        owner: repos[i].owner.login,
+        owner: repos[i].owner,
         stargazers_count: repos[i].stargazers_count,
         full_name: repos[i].full_name,
         html_url: repos[i].html_url,

@@ -16,6 +16,12 @@ import "react-virtualized/styles.css";
 import "./repo.css";
 // import { Button } from "bootstrap/dist/js/bootstrap";
 
+/* DOC
+- RV is TypeScript ready afaik.
+- Custom styles: https://github.com/bvaughn/react-virtualized/blob/master/docs/customizingStyles.md
+- Table, multi column sort: https://github.com/bvaughn/react-virtualized/blob/master/docs/multiColumnSortTable.md
+*/
+
 class RVReposPage extends PureComponent {
 
   constructor(props) {
@@ -272,7 +278,7 @@ class RVReposPage extends PureComponent {
                   rowHeight={50}
                   rowCount={repos.length}
                   rowGetter={({ index }) => repos[index]}
-                  sort={({sortBy, sortDirection}) => console.log("header clicked; ", sortBy)}
+                  sort={({sortBy, sortDirection}) => console.log("RV, header clicked; ", sortBy, sortDirection)}
                 >
                   {this.state.selectionType !== 0 &&
                     <Column dataKey="id" cellRenderer={this.checkboxCellRenderer} width={60} />
