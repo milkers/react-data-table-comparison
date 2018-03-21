@@ -113,7 +113,8 @@ class RDGReposPage extends PureComponent {
         key: 'language',
         name: this.state.selectionType === 0 ? 'Language' : 'Dil',
         width: 200,
-        sortable: true
+        sortable: true,
+        resizable: true
       },
       {
         key: 'owner',

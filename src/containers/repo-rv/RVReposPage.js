@@ -194,7 +194,7 @@ class RVReposPage extends PureComponent {
     const nextStyles = classNames("page-item", {
       disabled: repos.length === 0
     });
-    console.log('RV, repos: ', repos);
+    console.log('RV, repos, page: ', repos, page);
 
     return (
       <div className="container">
