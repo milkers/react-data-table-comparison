@@ -143,16 +143,6 @@ class RDGReposPage extends PureComponent {
         key: 'description',
         name: 'Description',
         width: 400
-      },
-      {
-        key: 'startDate',
-        name: 'Start Date',
-        width: 200
-      },
-      {
-        key: 'completeDate',
-        name: 'Expected Complete',
-        width: 200
       }
     ];
     console.log('RDG, initializeCols, _cols, state: ', this._columns, this.state);
@@ -246,11 +236,6 @@ class RDGReposPage extends PureComponent {
     });
   };
 
-
-  getRandomDate = (start, end) => {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toLocaleDateString();
-  };
-
   createRows = (repos) => {
 
     let rows = [];
@@ -263,8 +248,6 @@ class RDGReposPage extends PureComponent {
         full_name: repos[i].full_name,
         html_url: repos[i].html_url,
         description: repos[i].description,
-        startDate: this.getRandomDate(new Date(2015, 3, 1), new Date()),
-        completeDate: this.getRandomDate(new Date(), new Date(2016, 0, 1))
       });
     }
 
@@ -335,6 +318,14 @@ class RDGReposPage extends PureComponent {
         >
           Selection Toggler-{this.state.selectionType}
         </button>
+        {" "}
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => console.log('Get Selections: ', this.state.selectedRows)}
+        >
+          Get Selections
+        </button>
 
         {repos &&
           <div
@@ -362,8 +353,14 @@ class RDGReposPage extends PureComponent {
                 }
               }} 
             /> 
+
+            
+
           </div>
         }
+        <div>
+          {this.state.selectedRows.length} items are selected.
+        </div>
       </div>
     );
   }

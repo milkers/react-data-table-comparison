@@ -20,6 +20,7 @@ import "./repo.css";
 - RV is TypeScript ready afaik.
 - Custom styles: https://github.com/bvaughn/react-virtualized/blob/master/docs/customizingStyles.md
 - Table, multi column sort: https://github.com/bvaughn/react-virtualized/blob/master/docs/multiColumnSortTable.md
+- ? Footer: https://github.com/bvaughn/react-virtualized/issues/805
 */
 
 class RVReposPage extends PureComponent {
@@ -36,7 +37,7 @@ class RVReposPage extends PureComponent {
 
     this.state = {
       selectionType: 2, // 0, 1, 2
-      selectedRows: []
+      selectedRows: {}
     };
   }
 
@@ -90,10 +91,10 @@ class RVReposPage extends PureComponent {
   }
 
   handleCheckboxCheck(e, cellData, cellDataKey, columnData, rowData, rowIndex) {
-    let selectedRows = this.state.selectedRows.slice();
+    let selectedRows = Object.assign({}, this.state.selectedRows ); 
 
     if (this.state.selectionType === 1) {
-      selectedRows = [];
+      selectedRows = {};
     }
     selectedRows[rowIndex] = e.target.checked;
 
@@ -110,7 +111,7 @@ class RVReposPage extends PureComponent {
 
     this.setState({
       selectionType: selectionType,
-      selectedRows: []
+      selectedRows: {}
     });
   }
 
@@ -122,7 +123,6 @@ class RVReposPage extends PureComponent {
     rowIndex
   }) => (
       <a href={cellData.html_url} target="_blank" rel="noopener noreferrer">
-        {/* <Button>click</Button> */}
         <img src={cellData.avatar_url} width="32" height="32" alt="owner" />
         <span style={{ marginLeft: "0.5em" }}>{cellData.login}</span>
       </a>
@@ -145,12 +145,14 @@ class RVReposPage extends PureComponent {
     rowData,
     rowIndex
   }) => (
-      <span className="float-right">
-        {cellData.toLocaleString()}
-        {" "}
-        <i className="fa fa-star" style={{ color: "gold" }} />
-        {" "}
-      </span>
+      <div>
+        <span className="float-right">
+          {cellData.toLocaleString()}
+          {" "}
+          <i className="fa fa-star" style={{ color: "gold" }} />
+          {" "}
+        </span>
+      </div>
     );
 
   checkboxCellRenderer = ({
@@ -245,6 +247,14 @@ class RVReposPage extends PureComponent {
         >
           Selection Toggler-{this.state.selectionType}
         </button>
+        {" "}
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => console.log('Get Selections: ', this.state.selectedRows)}
+        >
+          Get Selections
+        </button>
 
         {error &&
           <div className="alert alert-danger">
@@ -273,7 +283,7 @@ class RVReposPage extends PureComponent {
                   noRowsRenderer={this.getNoRowsRenderer}
                   rowClassName={this.getRowClassName}
                   width={width}
-                  height={height}
+                  height={500}
                   headerHeight={50}
                   rowHeight={50}
                   rowCount={repos.length}
@@ -321,9 +331,13 @@ class RVReposPage extends PureComponent {
                 </Table>
               )}
             </AutoSizer>
+
+            <div className="footer">
+              {Object.keys(this.state.selectedRows).length} items are selected.
+            </div>
           </div>
         }
-
+     
       </div>
     );
   }
