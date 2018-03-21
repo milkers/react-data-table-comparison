@@ -20,7 +20,7 @@ import "./repo.css";
 - RV is TypeScript ready afaik.
 - Custom styles: https://github.com/bvaughn/react-virtualized/blob/master/docs/customizingStyles.md
 - Table, multi column sort: https://github.com/bvaughn/react-virtualized/blob/master/docs/multiColumnSortTable.md
-- ? Footer: https://github.com/bvaughn/react-virtualized/issues/805
+- Footer: https://github.com/bvaughn/react-virtualized/issues/805
 */
 
 class RVReposPage extends PureComponent {
