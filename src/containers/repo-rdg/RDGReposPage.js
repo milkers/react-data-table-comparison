@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import classNames from "classnames";
 
 import ReactDataGrid from 'react-data-grid';
+import update from "immutability-helper";
+import {Editors, Formatters} from "react-data-grid-addons";
 
 import {
   invalidateReposPage,
@@ -13,6 +15,62 @@ import {
 
 // import "react-virtualized/styles.css";
 import "./repo.css";
+
+import {ScrollSync, ScrollSyncPane} from "react-scroll-sync";
+
+const { DropDownEditor } = Editors;
+const { DropDownFormatter } = Formatters;
+
+// options for IssueType dropdown editor
+// these can either be an array of strings, or an object that matches the schema below.
+const issueTypes = [
+  { id: 'bug', value: 'bug', text: 'Bug', title: 'Bug' },
+  { id: 'improvement', value: 'improvement', text: 'Improvement', title: 'Improvement' },
+  { id: 'epic', value: 'epic', text: 'Epic', title: 'Epic' },
+  { id: 'story', value: 'story', text: 'Story', title: 'Story' }
+];
+// const IssueTypesEditor = <DropDownEditor options={issueTypes}/>;
+// const IssueTypesFormatter = <DropDownFormatter options={issueTypes} value="bug"/>;
+
+const { editors: { EditorBase } } = require('react-data-grid');
+
+class ParamsEditor extends EditorBase {
+  constructor(props) {
+    super(props);
+    this.state = {
+        value : '',
+    };
+    this._input = null;
+
+    this.getInputNode = this.getInputNode.bind(this);
+    this.getValue = this.getValue.bind(this);
+
+    this.onValueChanged = this.onValueChanged.bind(this);
+  }
+
+  getInputNode() {
+      return this._input;
+  }
+
+  getValue() {
+      var updated = {};
+      updated[this.props.column.key] = '123 - '+this.state.value;
+      return updated;
+  }
+
+  onValueChanged(ev) {
+      this.setState({ value : ev.target.value });
+  }
+
+  render() {
+      return (
+        <div>
+          <h3>editor</h3>
+          <input ref={(ref) => { this._input = ref; }} value={this.state.value} onChange={this.onValueChanged}></input>
+        </div>
+      );
+  }
+}
 
 
 /* DOC
@@ -92,6 +150,7 @@ class RDGReposPage extends PureComponent {
     this.handleSelectionTogglerClick = this.handleSelectionTogglerClick.bind(this);
     this.onRowsSelected = this.onRowsSelected.bind(this);
     this.onRowsDeselected = this.onRowsDeselected.bind(this);
+    this.handleGridRowsUpdated = this.handleGridRowsUpdated.bind(this);
 
     this.state = {
       selectionType: 2, // 0, 1, 2
@@ -105,7 +164,7 @@ class RDGReposPage extends PureComponent {
     this._columns = [
       {
         key: 'repo',
-        name: 'Repository',
+        name: 'Repositoryy',
         locked: true,
         width: 200
       },
@@ -144,6 +203,12 @@ class RDGReposPage extends PureComponent {
         key: 'description',
         name: 'Description',
         width: 400
+      },
+      {
+        key: 'issueType',
+        name: 'Issue Type',
+        editor: ParamsEditor,
+        // formatter: IssueTypesFormatter
       }
     ];
     console.log('RDG, initializeCols, _cols, state: ', this._columns, this.state);
@@ -209,6 +274,20 @@ class RDGReposPage extends PureComponent {
     });
     
   }
+
+  handleGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    // let rows = this.state.rows.slice();
+    let rows = this._rows.slice();
+
+    for (let i = fromRow; i <= toRow; i++) {
+      let rowToUpdate = rows[i];
+      let updatedRow = update(rowToUpdate, {$merge: updated});
+      rows[i] = updatedRow;
+    }
+
+    // this.setState({ rows });
+    this._rows = rows;
+  };
 
   handleGridSort (sortColumn, sortDirection) {
     console.log('RDG, handleGridsort, column, direction: ', sortColumn, sortDirection);
@@ -337,31 +416,49 @@ class RDGReposPage extends PureComponent {
               marginTop: "20px"
             }}
           >
-            <ReactDataGrid
-              onGridSort={this.handleGridSort}
-              columns={this._columns}
-              rowGetter={this.rowGetter}
-              rowsCount={repos.length}
-              minHeight={500} 
-              emptyRowsView={EmptyRowsView}
-              rowSelection={{
-                showCheckbox: this.state.selectionType !== 0,
-                enableShiftSelect: false,
-                onRowsSelected: this.onRowsSelected,
-                onRowsDeselected: this.onRowsDeselected,
-                selectBy: {
-                  indexes: this.state.selectedRows
-                }
-              }} 
-            /> 
+            <ScrollSync>
+              <div style={{ display: 'flex', position: 'relative', height: 300 }}>
+              <ScrollSyncPane>
+                <ReactDataGrid
+                  onGridSort={this.handleGridSort}
+                  columns={this._columns}
+                  rowGetter={this.rowGetter}
+                  rowsCount={repos.length}
+                  minHeight={500} 
+                  emptyRowsView={EmptyRowsView}
+                  rowSelection={{
+                    showCheckbox: this.state.selectionType !== 0,
+                    enableShiftSelect: false,
+                    onRowsSelected: this.onRowsSelected,
+                    onRowsDeselected: this.onRowsDeselected,
+                    selectBy: {
+                      indexes: this.state.selectedRows
+                    }
+                  }}
+                  onGridRowsUpdated={this.handleGridRowsUpdated} 
+                /> 
+              </ScrollSyncPane>
 
+              <ScrollSyncPane>
+                <div style={{overflow: 'auto'}}>
+                  <section style={{ width: 50, height: 1000 }}>
+                    <h1>Middle Pane Content</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab aperiam doloribus
+                      dolorum
+                      est eum eveniet exercitationem iste labore minus, neque nobis odit officiis omnis
+                      possimus quasi rerum sed soluta veritatis.</p>
+                  </section>
+                </div>
+              </ScrollSyncPane>
+              </div>
+            </ScrollSync>
             
 
           </div>
         }
-        <div>
+        {/* <div>
           {this.state.selectedRows.length} items are selected.
-        </div>
+        </div> */}
       </div>
     );
   }
